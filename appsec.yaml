@@ -1,17 +1,23 @@
-{
-  "version": 0.0,
-  "Resources": [
-    {
-      "TargetService": {
-        "Type": "AWS::ECS::Service",
-        "Properties": {
-          "TaskDefinition": "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1",
-          "LoadBalancerInfo": {
-            "ContainerName": "my-cont",
-            "ContainerPort": 8080
-          }
-        }
-      }
-    }
-  ]
-}
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1"
+        LoadBalancerInfo:
+          ContainerName: "my-cont"
+          ContainerPort: 8080
+
+Hooks:
+  BeforeInstall:
+    - run: echo "BeforeInstall: Cleaning up old Docker containers"
+    - run: docker system prune -af
+  AfterInstall:
+    - run: echo "AfterInstall: Verifying ECS Service and Task Definition"
+    - run: aws ecs describe-services --cluster my-cluster --services my_service
+  BeforeAllowTraffic:
+    - run: echo "BeforeAllowTraffic: Preparing for traffic switch"
+    - run: aws ecs wait services-stable --cluster my-cluster --services my_service
+  AfterAllowTraffic:
+    - run: echo "AfterAllowTraffic: Traffic successfully routed"
+    - run: aws ecs describe-services --cluster my-cluster --services my_service
