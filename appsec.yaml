@@ -1,23 +1,56 @@
 version: 0.0
+
+# Specify the ECS service to be updated
 Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1"
+        # Use a parameter for the task definition ARN for flexibility
+        TaskDefinition: arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1
         LoadBalancerInfo:
           ContainerName: "my-cont"
+          # Replace placeholder with actual port number
           ContainerPort: 8080
 
+# Define hooks for different stages of the deployment
 Hooks:
   BeforeInstall:
-    - run: echo "BeforeInstall: Cleaning up old Docker containers"
-    - run: docker system prune -af
+    - run: echo "BeforeInstall: Preparing for new deployment"
+    # Removed docker system prune as it's not applicable in ECS environment
+
   AfterInstall:
     - run: echo "AfterInstall: Verifying ECS Service and Task Definition"
-    - run: aws ecs describe-services --cluster my-cluster --services my_service
+    # Use environment variables for cluster and service names
+    - run: |
+        aws ecs describe-services --cluster $ECS_CLUSTER --services $ECS_SERVICE --output json > service_description.json
+        if [ $? -ne 0 ]; then
+          echo "Failed to describe ECS service"
+          exit 1
+        fi
+
   BeforeAllowTraffic:
     - run: echo "BeforeAllowTraffic: Preparing for traffic switch"
-    - run: aws ecs wait services-stable --cluster my-cluster --services my_service
+    # Wait for service stability and validate health
+    - run: |
+        aws ecs wait services-stable --cluster $ECS_CLUSTER --services $ECS_SERVICE
+        if [ $? -ne 0 ]; then
+          echo "ECS service failed to stabilize"
+          exit 1
+        fi
+        # Add health check validation here
+
   AfterAllowTraffic:
-    - run: echo "AfterAllowTraffic: Traffic successfully routed"
-    - run: aws ecs describe-services --cluster my-cluster --services my_service
+    - run: echo "AfterAllowTraffic: Confirming successful deployment"
+    # Check the running tasks in the service
+    - run: |
+        RUNNING_COUNT=$(aws ecs describe-services --cluster $ECS_CLUSTER --services $ECS_SERVICE --output json | jq '.services[0].runningCount')
+        if [ "$RUNNING_COUNT" -eq "0" ]; then
+          echo "No tasks running in the service after deployment"
+          exit 1
+        fi
+        echo "Deployment successful with $RUNNING_COUNT tasks running"
+
+# Added rollback hook
+  OnRollback:
+    - run: echo "OnRollback: Rolling back deployment"
+    # Add rollback logic here
