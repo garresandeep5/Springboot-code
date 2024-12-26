@@ -1,36 +1,15 @@
-{
-  "ApplicationName": "my-Deploy",
-  "DeploymentGroupName": "my-Deploy-group",
-  "DeploymentConfigName": "CodeDeployDefault.ECSCanary10Percent15Minutes",
-  "EcsServices": [
-    {
-      "ServiceName": "my_service",
-      "ClusterName": "my-cluster"
-    }
-  ],
-  "TaskDefinition": "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1",
-  "LoadBalancerInfo": {
-    "TargetGroupPairInfoList": [
-      {
-        "TargetGroups": [
-          {
-            "Name": "my-tg2"
-          },
-          {
-            "Name": "test"
-          }
-        ],
-        "ProdTrafficRoute": {
-          "ListenerArns": ["arn:aws:elasticloadbalancing:ap-south-1:266735821233:targetgroup/my-tg2/faaf2ae8aa2ec78d"]
-        },
-        "TestTrafficRoute": {
-          "ListenerArns": ["arn:aws:elasticloadbalancing:ap-south-1:266735821233:targetgroup/test/536561fc810de21a"]
-        }
-      }
-    ]
-  },
-  "AutoRollbackConfiguration": {
-    "Enabled": true,
-    "Events": ["DEPLOYMENT_FAILURE"]
-  }
-}
+applicationName: 'my-Deploy'
+deploymentGroupName: 'my-Deploy-group'
+revision:
+  revisionType: AppSpecContent
+  appSpecContent:
+    content: |
+      version: 0.0
+      Resources:
+        - TargetService:
+            Type: AWS::ECS::Service
+            Properties:
+              TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1"
+              LoadBalancerInfo:
+                ContainerName: "my-cont"
+                ContainerPort: 8080
