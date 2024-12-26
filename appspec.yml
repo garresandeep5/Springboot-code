@@ -1,0 +1,26 @@
+version: 0.0
+resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/my-td:1"
+        LoadBalancerInfo:
+          ContainerName: "my-cony"
+          ContainerPort: 8080
+Hooks:
+  BeforeInstall:
+    - location: scripts/validate.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: scripts/setup.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start.sh
+      timeout: 300
+      runas: root
+  ValidateService:
+    - location: scripts/healthcheck.sh
+      timeout: 300
+      runas: root
