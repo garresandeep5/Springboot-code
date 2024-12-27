@@ -1,5 +1,5 @@
 version: 0.0
-resources:
+Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
@@ -7,20 +7,20 @@ resources:
         LoadBalancerInfo:
           ContainerName: "my-cont"
           ContainerPort: 8080
-hooks:
+Hooks:
   BeforeInstall:
-    - location: scripts/validate.sh
-      timeout: 300
-      runas: root
+    - Location: scripts/validate.sh
+      Timeout: 300
+      RunAs: root
   AfterInstall:
-    - location: scripts/setup.sh
-      timeout: 300
-      runas: root
+    - Location: scripts/setup.sh
+      Timeout: 300
+      RunAs: root
   ApplicationStart:
-    - location: scripts/start.sh
-      timeout: 300
-      runas: root
+    - Location: scripts/start.sh
+      Timeout: 300
+      RunAs: root
   ValidateService:
-    - location: scripts/healthcheck.sh
-      timeout: 300
-      runas: root
+    - Location: scripts/healthcheck.sh
+      Timeout: 300
+      RunAs: root
