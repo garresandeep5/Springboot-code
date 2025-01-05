@@ -7,3 +7,7 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "my-cont"
           ContainerPort: 8080
+Hooks:
+  - BeforeInstall: "arn:aws:lambda:ap-south-1:266735821233:function:before-install"
+  - AfterInstall: "arn:aws:lambda:ap-south-1:266735821233:function:After-install"
+  - AfterAllowTestTraffic: "arn:aws:lambda:ap-south-1:266735821233:function:afterallowtesttraffic"
