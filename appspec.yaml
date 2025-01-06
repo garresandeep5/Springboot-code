@@ -3,10 +3,8 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/test-poc-td:1"
+        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/test-poc-td:1"  # ECS Task Definition ARN
         LoadBalancerInfo:
-          ContainerName: "test-poc-cont"
-          ContainerPort: 8080
-        DeploymentController:
-          Type: CODE_DEPLOY
-        DesiredCount: 2
+          ContainerName: "test-poc-cont"  # Container name in ECS Task Definition
+          ContainerPort: 8080  # Port the container listens on
+        DesiredCount: 2  # The desired count of running tasks
