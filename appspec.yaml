@@ -7,4 +7,3 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "test-poc-cont"  # Container name in ECS Task Definition
           ContainerPort: 8080  # Port the container listens on
-        DesiredCount: 2  # The desired count of running tasks
