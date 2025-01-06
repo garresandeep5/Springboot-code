@@ -7,3 +7,6 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "test-poc-cont"
           ContainerPort: 8080
+        DeploymentController:
+          Type: CODE_DEPLOY
+        DesiredCount: 2
