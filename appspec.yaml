@@ -3,7 +3,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "arn:aws:ecs:ap-south-1:266735821233:task-definition/Blue-and-Green:1"  # ECS Task Definition ARN
+        TaskDefinition: "arn:aws:ecs:us-east-2:149914652348:task-definition/Poc-td:1"  # ECS Task Definition ARN
         LoadBalancerInfo:
-          ContainerName: "blue-cont"  # Container name in ECS Task Definition
+          ContainerName: "my-cont"  # Container name in ECS Task Definition
           ContainerPort: 8080  # Port the container listens
